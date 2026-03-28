@@ -99,15 +99,32 @@
       background-repeat: no-repeat;
       background-position: right 14px center;
       padding-right: 36px;
+      min-height: 48px;
     }
 
     .form-group input[type="date"] {
+      text-align: center;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      min-height: 48px;
+      line-height: 1.2;
+    }
+
+    /* Fix for iOS/Safari date input */
+    .form-group input[type="date"]::-webkit-date-and-time-value {
       text-align: center;
     }
 
     @media (max-width: 480px) {
       .form-row {
         grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .form-group input[type="date"],
+      .form-group select {
+        font-size: 16px; /* Prevents iOS zoom on focus */
       }
     }
 
