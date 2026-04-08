@@ -1,0 +1,453 @@
+/* VIE Communities - Appointment Booking Platform */
+
+/* Font Definitions */
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('../fonts/Proxima-Nova-Regular.woff2') format('woff2'),
+       url('../fonts/Proxima-Nova-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url('../fonts/Proxima-Nova-Semibold.woff2') format('woff2'),
+       url('../fonts/Proxima-Nova-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* CSS Variables */
+:root {
+  --color-light: #EFEDE9;
+  --color-dark: #3D3D3D;
+  --color-gray: #6B6B6B;
+  --color-gray-light: #D4D4D4;
+  --font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-light);
+  color: var(--color-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Layout */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.logo {
+  max-width: 180px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 8px;
+}
+
+.header p {
+  color: var(--color-gray);
+  font-size: 1rem;
+}
+
+/* Cards */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--color-dark);
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-dark);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--color-gray-light);
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  color: var(--color-dark);
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-dark);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--color-gray-light);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-dark);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2a2a2a;
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--color-dark);
+  border: 1px solid var(--color-gray-light);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-dark);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Calendar Grid */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-nav button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-gray-light);
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--color-dark);
+  transition: all 0.2s;
+}
+
+.calendar-nav button:hover {
+  border-color: var(--color-dark);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--color-gray);
+  padding: 8px 0;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.calendar-day:hover:not(.disabled):not(.other-month) {
+  border-color: var(--color-dark);
+}
+
+.calendar-day.other-month {
+  color: var(--color-gray-light);
+  cursor: default;
+}
+
+.calendar-day.disabled {
+  color: var(--color-gray-light);
+  cursor: not-allowed;
+}
+
+.calendar-day.selected {
+  background: var(--color-dark);
+  color: white;
+}
+
+.calendar-day.today {
+  font-weight: 600;
+  border-color: var(--color-gray);
+}
+
+/* Time Slots */
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.time-slot {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid var(--color-gray-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.time-slot:hover:not(.unavailable) {
+  border-color: var(--color-dark);
+}
+
+.time-slot.selected {
+  background: var(--color-dark);
+  color: white;
+  border-color: var(--color-dark);
+}
+
+.time-slot.unavailable {
+  color: var(--color-gray-light);
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Agent Info */
+.agent-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-light);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.agent-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-dark);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.agent-details h3 {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.agent-details p {
+  color: var(--color-gray);
+  font-size: 0.9rem;
+}
+
+/* Invite Link Box */
+.invite-link-box {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.invite-link-box input {
+  flex: 1;
+  background: var(--color-light);
+  border: none;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  color: var(--color-gray);
+}
+
+.invite-link-box button {
+  white-space: nowrap;
+}
+
+/* Success Message */
+.success-message {
+  text-align: center;
+  padding: 40px;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--color-dark);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 2rem;
+}
+
+.success-message h2 {
+  margin-bottom: 12px;
+}
+
+.success-message p {
+  color: var(--color-gray);
+}
+
+/* Availability Settings */
+.availability-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-light);
+}
+
+.availability-row:last-child {
+  border-bottom: none;
+}
+
+.availability-row label {
+  width: 100px;
+  font-weight: 600;
+}
+
+.availability-row input[type="checkbox"] {
+  width: auto;
+}
+
+.availability-row select {
+  padding: 8px 12px;
+  flex: 1;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: var(--color-light);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-gray);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: white;
+  color: var(--color-dark);
+}
+
+/* Hidden */
+.hidden {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .time-slots {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .invite-link-box {
+    flex-direction: column;
+  }
+
+  .availability-row {
+    flex-wrap: wrap;
+  }
+
+  .availability-row label {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}

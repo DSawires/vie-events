@@ -3,282 +3,567 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Request an Appointment | VIE Communities</title>
-  <meta name="description" content="Schedule an appointment with VIE Communities. Leave your info and we'll reach out to find a time that works for you.">
-  <meta name="robots" content="index, follow">
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Request an Appointment | VIE Communities">
-  <meta property="og:description" content="Schedule an appointment with VIE Communities. Leave your info and we'll reach out to find a time that works for you.">
-  <meta property="og:image" content="logo.png">
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Request an Appointment | VIE Communities">
-  <meta name="twitter:description" content="Schedule an appointment with VIE Communities. Leave your info and we'll reach out to find a time that works for you.">
-
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="styles.css">
-
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "VIE Communities",
-    "description": "Schedule an appointment with VIE Communities.",
-    "logo": "logo.png",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "Appointments"
-    }
-  }
-  </script>
-
+  <title>Payment Calculator | VIE Communities</title>
+  <meta name="description" content="Calculate your payment plan for VIE Communities properties. Explore apartments, townhouses, and villas.">
+  <link rel="icon" type="image/png" href="assets/images/favicon.png">
+  <link rel="stylesheet" href="assets/css/styles.css">
   <style>
     .page-wrapper {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
       padding: 40px 20px;
     }
 
-    .form-card {
-      max-width: 420px;
+    .calc-container {
+      max-width: 800px;
       margin: 0 auto;
-      width: 100%;
     }
 
-    .form-header {
+    .calc-header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 32px;
     }
 
-    .form-header .logo {
+    .calc-header .logo {
       max-width: 140px;
       margin-bottom: 20px;
     }
 
-    .form-header h1 {
+    .calc-header h1 {
       font-size: 1.6rem;
       font-weight: 600;
       color: var(--color-dark);
       margin-bottom: 8px;
     }
 
-    .form-header p {
+    .calc-header p {
       color: var(--color-gray);
       font-size: 0.95rem;
     }
 
-    .form-group input {
-      text-align: center;
+    /* Unit Categories */
+    .category-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--color-gray-light);
     }
 
-    .form-group input::placeholder {
-      text-align: center;
+    .units-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
     }
 
-    .submit-btn {
+    .unit-card {
+      background: white;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .unit-card:hover {
+      border-color: var(--color-gray-light);
+      transform: translateY(-2px);
+    }
+
+    .unit-card.selected {
+      border-color: var(--color-dark);
+      background: var(--color-dark);
+      color: white;
+    }
+
+    .unit-card.selected .unit-icon {
+      filter: brightness(0) invert(1);
+    }
+
+    .unit-card.selected .unit-details {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .unit-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      opacity: 0.8;
+    }
+
+    .unit-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .unit-details {
+      font-size: 0.8rem;
+      color: var(--color-gray);
+    }
+
+    /* Results Section */
+    .results-section {
+      display: none;
+    }
+
+    .results-section.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card {
+      background: white;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 16px;
+    }
+
+    .selected-unit-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--color-light);
+      margin-bottom: 20px;
+    }
+
+    .selected-unit-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--color-light);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .selected-unit-info h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .selected-unit-info p {
+      font-size: 0.9rem;
+      color: var(--color-gray);
+    }
+
+    .result-section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-light);
+    }
+
+    .result-row:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      color: var(--color-gray);
+      font-size: 0.95rem;
+    }
+
+    .result-value {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--color-dark);
+    }
+
+    .result-value.highlight {
+      font-size: 1.1rem;
+    }
+
+    .payment-box {
+      background: var(--color-light);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .quarterly-payment {
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .quarterly-payment .label {
+      font-size: 0.85rem;
+      color: var(--color-gray);
+      margin-bottom: 8px;
+    }
+
+    .quarterly-payment .amount {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--color-dark);
+    }
+
+    .quarterly-payment .period {
+      font-size: 0.85rem;
+      color: var(--color-gray);
       margin-top: 4px;
     }
 
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .form-group select {
-      text-align: center;
-      text-align-last: center;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B6B6B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      padding-right: 36px;
-      min-height: 48px;
-    }
-
-    .form-group input[type="date"] {
-      text-align: center;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      min-height: 48px;
-      line-height: 1.2;
-    }
-
-    /* Fix for iOS/Safari date input */
-    .form-group input[type="date"]::-webkit-date-and-time-value {
-      text-align: center;
-    }
-
-    @media (max-width: 480px) {
-      .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-      .form-group input[type="date"],
-      .form-group select {
-        font-size: 16px; /* Prevents iOS zoom on focus */
-      }
-    }
-
-    .success-state {
-      text-align: center;
-      padding: 32px 20px;
-    }
-
-    .success-state .checkmark {
-      width: 64px;
-      height: 64px;
-      background: var(--color-dark);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-    }
-
-    .success-state .checkmark svg {
-      width: 32px;
-      height: 32px;
-      stroke: white;
-      stroke-width: 3;
-    }
-
-    .success-state h2 {
-      font-size: 1.4rem;
-      margin-bottom: 10px;
-    }
-
-    .success-state p {
+    .note {
+      font-size: 0.8rem;
       color: var(--color-gray);
-      line-height: 1.6;
-    }
-
-    .privacy-link {
-      text-align: center;
       margin-top: 16px;
-      font-size: 0.85rem;
+      line-height: 1.5;
     }
 
-    .privacy-link a {
-      color: var(--color-gray);
+    .book-btn {
+      display: block;
+      width: 100%;
+      padding: 16px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background: var(--color-dark);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .book-btn:hover {
+      background: #2a2a2a;
+    }
+
+    @media (max-width: 600px) {
+      .units-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .unit-card {
+        padding: 16px 12px;
+      }
+
+      .unit-icon {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
-
-  <!-- Meta Pixel Code -->
-  <script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window,document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '953142404309761');
-  fbq('track', 'PageView');
-  </script>
-  <noscript>
-    <img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=953142404309761&ev=PageView&noscript=1"/>
-  </noscript>
-  <!-- End Meta Pixel Code -->
 </head>
 <body>
   <main class="page-wrapper">
-    <div class="form-card card" id="formCard">
-      <div class="form-header">
-        <img src="logo.png" alt="VIE Communities" class="logo">
-        <h1>Let's Connect</h1>
-        <p>Leave your info and we'll reach out to schedule a time.</p>
+    <div class="calc-container">
+      <div class="calc-header">
+        <img src="assets/images/logo.png" alt="VIE Communities" class="logo">
+        <h1>Payment Calculator</h1>
+        <p>Select a unit type to see your payment plan</p>
       </div>
 
-      <form id="appointmentForm" action="https://formspree.io/f/mwvwkdyp" method="POST" aria-label="Appointment request form">
-        <div class="form-group">
-          <input type="text" id="name" name="name" required placeholder="Your Name" aria-label="Your name" autocomplete="name">
-        </div>
-
-        <div class="form-group">
-          <input type="tel" id="phone" name="phone" required placeholder="Phone Number" aria-label="Phone number" autocomplete="tel">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <input type="date" id="date" name="preferredDate" required aria-label="Preferred date">
-          </div>
-          <div class="form-group">
-            <select id="time" name="preferredTime" required aria-label="Preferred time">
-              <option value="" disabled selected>Time</option>
-              <option value="Morning (9am-12pm)">Morning</option>
-              <option value="Afternoon (12pm-5pm)">Afternoon</option>
-              <option value="Evening (5pm-8pm)">Evening</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-full submit-btn">Request Appointment</button>
-        <p class="privacy-link"><a href="privacy.html">Privacy Policy</a></p>
-      </form>
-    </div>
-
-    <div class="form-card card hidden" id="successCard" role="status" aria-live="polite">
-      <div class="success-state">
-        <div class="checkmark">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Apartments -->
+      <div class="category-title">Apartments</div>
+      <div class="units-grid">
+        <div class="unit-card" data-unit="1br-apt" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18"/>
+            <path d="M5 21V7l7-4 7 4v14"/>
+            <path d="M9 21v-6h6v6"/>
+            <rect x="9" y="9" width="2" height="2"/>
           </svg>
+          <div class="unit-name">1BR</div>
+          <div class="unit-details">72 sqm</div>
         </div>
-        <h2>We'll Be in Touch!</h2>
-        <p>Expect a call from us shortly to find a time that works for you.</p>
+
+        <div class="unit-card" data-unit="2br-apt" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18"/>
+            <path d="M5 21V7l7-4 7 4v14"/>
+            <path d="M9 21v-6h6v6"/>
+            <rect x="7" y="9" width="2" height="2"/>
+            <rect x="15" y="9" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">2BR</div>
+          <div class="unit-details">140 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="2br-loft" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18"/>
+            <path d="M5 21V7l7-4 7 4v14"/>
+            <path d="M9 21v-6h6v6"/>
+            <path d="M5 12h14" stroke-dasharray="2 2"/>
+            <rect x="7" y="8" width="2" height="2"/>
+            <rect x="15" y="8" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">2BR Loft</div>
+          <div class="unit-details">170 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="3br-apt" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18"/>
+            <path d="M4 21V7l8-4 8 4v14"/>
+            <path d="M9 21v-5h6v5"/>
+            <rect x="6" y="9" width="2" height="2"/>
+            <rect x="11" y="9" width="2" height="2"/>
+            <rect x="16" y="9" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">3BR</div>
+          <div class="unit-details">176 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="3br-apt-living" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18"/>
+            <path d="M3 21V7l9-4 9 4v14"/>
+            <path d="M9 21v-5h6v5"/>
+            <rect x="5" y="9" width="2" height="2"/>
+            <rect x="11" y="9" width="2" height="2"/>
+            <rect x="17" y="9" width="2" height="2"/>
+            <rect x="11" y="13" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">3BR + Living</div>
+          <div class="unit-details">200 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="4br" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 21h20"/>
+            <path d="M2 21V7l10-5 10 5v14"/>
+            <path d="M9 21v-5h6v5"/>
+            <rect x="4" y="9" width="2" height="2"/>
+            <rect x="9" y="9" width="2" height="2"/>
+            <rect x="13" y="9" width="2" height="2"/>
+            <rect x="18" y="9" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">4BR</div>
+          <div class="unit-details">266 sqm</div>
+        </div>
+      </div>
+
+      <!-- Villas -->
+      <div class="category-title">Villas & Townhouses</div>
+      <div class="units-grid">
+        <div class="unit-card" data-unit="middle-townhouse" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 21h22"/>
+            <path d="M3 21V10l4-4 4 4v11"/>
+            <path d="M13 21V10l4-4 4 4v11"/>
+            <path d="M5 21v-4h2v4"/>
+            <path d="M15 21v-4h2v4"/>
+            <rect x="5" y="12" width="2" height="2"/>
+            <rect x="15" y="12" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">Mid Townhouse</div>
+          <div class="unit-details">260 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="corner-townhouse" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 21h22"/>
+            <path d="M2 21V9l5-5 5 5v12"/>
+            <path d="M14 21V10l4-4 4 4v11"/>
+            <path d="M5 21v-4h2v4"/>
+            <path d="M16 21v-4h2v4"/>
+            <rect x="4" y="11" width="2" height="2"/>
+            <rect x="8" y="11" width="2" height="2"/>
+            <rect x="16" y="12" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">Corner Townhouse</div>
+          <div class="unit-details">300 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="twinhouse" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 21h22"/>
+            <path d="M2 21V9l5-5 5 5v12"/>
+            <path d="M12 21V9l5-5 5 5v12"/>
+            <path d="M5 21v-4h2v4"/>
+            <path d="M17 21v-4h2v4"/>
+            <rect x="4" y="11" width="2" height="2"/>
+            <rect x="8" y="11" width="2" height="2"/>
+            <rect x="14" y="11" width="2" height="2"/>
+            <rect x="18" y="11" width="2" height="2"/>
+          </svg>
+          <div class="unit-name">Twinhouse</div>
+          <div class="unit-details">290 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="villa" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 21h22"/>
+            <path d="M2 21V10l10-7 10 7v11"/>
+            <path d="M9 21v-6h6v6"/>
+            <rect x="5" y="12" width="3" height="3"/>
+            <rect x="16" y="12" width="3" height="3"/>
+            <circle cx="12" cy="6" r="1"/>
+          </svg>
+          <div class="unit-name">The Villa</div>
+          <div class="unit-details">330 sqm</div>
+        </div>
+
+        <div class="unit-card" data-unit="villa-plus" onclick="selectUnit(this)">
+          <svg class="unit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M0 21h24"/>
+            <path d="M1 21V10l11-8 11 8v11"/>
+            <path d="M9 21v-5h6v5"/>
+            <rect x="3" y="12" width="3" height="3"/>
+            <rect x="10" y="12" width="3" height="2"/>
+            <rect x="18" y="12" width="3" height="3"/>
+            <path d="M9 5h6v3H9z"/>
+          </svg>
+          <div class="unit-name">The Villa+</div>
+          <div class="unit-details">415 sqm</div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="results-section" id="results">
+        <div class="result-card">
+          <div class="selected-unit-header">
+            <div class="selected-unit-icon" id="selectedIcon"></div>
+            <div class="selected-unit-info">
+              <h3 id="unitName"></h3>
+              <p id="unitDetails"></p>
+            </div>
+          </div>
+
+          <div class="result-section-title">Unit Price</div>
+          <div class="result-row">
+            <span class="result-label">Delivery</span>
+            <span class="result-value" id="deliveryTimeline"></span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Unit Price</span>
+            <span class="result-value highlight" id="basePrice"></span>
+          </div>
+
+          <div class="payment-box">
+            <div class="result-section-title">Payment Plan</div>
+            <div class="result-row">
+              <span class="result-label">Down Payment (10%)</span>
+              <span class="result-value" id="downPayment"></span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">Remaining Balance</span>
+              <span class="result-value" id="remainingBalance"></span>
+            </div>
+            <div class="quarterly-payment">
+              <div class="label">Quarterly Payment</div>
+              <div class="amount" id="quarterlyPayment"></div>
+              <div class="period" id="paymentPeriod"></div>
+            </div>
+            <div class="result-row" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-gray-light);">
+              <span class="result-label">Paid by Delivery</span>
+              <span class="result-value highlight" id="paidByDelivery"></span>
+            </div>
+          </div>
+
+          <div class="result-section-title" style="margin-top: 24px;">Maintenance Fee (Separate Payment)</div>
+          <div class="result-row">
+            <span class="result-label">7% of Unit Price</span>
+            <span class="result-value" id="maintenanceFee"></span>
+          </div>
+          <p class="note">Maintenance fee is paid separately and is not included in the installment plan.</p>
+        </div>
+
+        <a href="book.html" class="book-btn" id="bookBtn">Book an Appointment</a>
       </div>
     </div>
   </main>
 
   <script>
-    const form = document.getElementById('appointmentForm');
-    const formCard = document.getElementById('formCard');
-    const successCard = document.getElementById('successCard');
-    const dateInput = document.getElementById('date');
+    const units = {
+      '1br-apt': { name: '1BR Apartment', rooms: 1, area: 72, deliveryPrice: 2.2, price: 5.3, type: 'apartment' },
+      '2br-apt': { name: '2BR Apartment', rooms: 2, area: 140, deliveryPrice: 4.2, price: 12.4, type: 'apartment' },
+      '2br-loft': { name: '2BR Loft', rooms: 2, area: 170, deliveryPrice: 5.2, price: 12.4, type: 'apartment' },
+      '3br-apt': { name: '3BR Apartment', rooms: 3, area: 176, deliveryPrice: 5.3, price: 12.8, type: 'apartment' },
+      '3br-apt-living': { name: '3BR Apartment w/Living', rooms: 3, area: 200, deliveryPrice: 6, price: 14.6, type: 'apartment' },
+      '4br': { name: '4BR Apartment', rooms: 4, area: 266, deliveryPrice: 8, price: 19.4, type: 'apartment' },
+      'corner-townhouse': { name: 'Corner Townhouse', rooms: 4, area: 300, deliveryPrice: 9.8, price: 28, type: 'villa' },
+      'middle-townhouse': { name: 'Middle Townhouse', rooms: 4, area: 260, deliveryPrice: 8.4, price: 24, type: 'villa' },
+      'twinhouse': { name: 'Twinhouse', rooms: 3, area: 290, deliveryPrice: 10, price: 29, type: 'villa' },
+      'villa': { name: 'The Villa', rooms: 4, area: 330, deliveryPrice: 13, price: 37, type: 'villa' },
+      'villa-plus': { name: 'The Villa+', rooms: 4, area: 415, deliveryPrice: 20, price: 57, type: 'villa' }
+    };
 
-    // Set minimum date to today
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
-    dateInput.setAttribute('value', today);
+    let selectedCard = null;
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const submitBtn = form.querySelector('button[type="submit"]');
-      submitBtn.textContent = 'Sending...';
-      submitBtn.disabled = true;
-
-      try {
-        const response = await fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { 'Accept': 'application/json' }
-        });
-
-        if (response.ok) {
-          fbq('track', 'Lead');
-          formCard.classList.add('hidden');
-          successCard.classList.remove('hidden');
-        } else {
-          throw new Error('Form submission failed');
-        }
-      } catch (error) {
-        submitBtn.textContent = 'Request Appointment';
-        submitBtn.disabled = false;
-        alert('There was an error. Please try again.');
+    function formatCurrency(amountInMillions) {
+      if (amountInMillions >= 1) {
+        return amountInMillions.toLocaleString('en-EG', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M EGP';
+      } else {
+        const amountInThousands = amountInMillions * 1000;
+        return amountInThousands.toLocaleString('en-EG', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' K EGP';
       }
-    });
+    }
+
+    function selectUnit(card) {
+      // Remove selection from previous card
+      if (selectedCard) {
+        selectedCard.classList.remove('selected');
+      }
+
+      // Select new card
+      card.classList.add('selected');
+      selectedCard = card;
+
+      const unitKey = card.dataset.unit;
+      const unit = units[unitKey];
+
+      // Calculate values
+      const basePrice = unit.price;
+      const maintenanceFee = basePrice * 0.07;
+      const downPayment = basePrice * 0.10;
+      const remainingBalance = basePrice - downPayment;
+
+      const years = unit.type === 'villa' ? 9 : 10;
+      const quarters = years * 4;
+      const quarterlyPayment = remainingBalance / quarters;
+      const deliveryYears = unit.type === 'villa' ? 2.5 : 3.5;
+      const quartersUntilDelivery = deliveryYears * 4;
+      const paidByDelivery = downPayment + (quarterlyPayment * quartersUntilDelivery);
+
+      // Update UI
+      document.getElementById('selectedIcon').innerHTML = card.querySelector('.unit-icon').outerHTML;
+      document.getElementById('unitName').textContent = unit.name;
+      document.getElementById('unitDetails').textContent = `${unit.rooms} Rooms | ${unit.area} sqm | Delivers in ${deliveryYears} years`;
+
+      document.getElementById('deliveryTimeline').textContent = `${deliveryYears} Years`;
+      document.getElementById('basePrice').textContent = formatCurrency(basePrice);
+      document.getElementById('maintenanceFee').textContent = formatCurrency(maintenanceFee);
+
+      document.getElementById('downPayment').textContent = formatCurrency(downPayment);
+      document.getElementById('remainingBalance').textContent = formatCurrency(remainingBalance);
+      document.getElementById('quarterlyPayment').textContent = formatCurrency(quarterlyPayment);
+      document.getElementById('paymentPeriod').textContent = `${quarters} payments over ${years} years`;
+      document.getElementById('paidByDelivery').textContent = formatCurrency(paidByDelivery);
+
+      // Update booking link with unit info
+      document.getElementById('bookBtn').href = `book.html?unit=${encodeURIComponent(unit.name)}`;
+
+      // Show results
+      document.getElementById('results').classList.add('show');
+
+      // Scroll to results
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   </script>
 </body>
 </html>
