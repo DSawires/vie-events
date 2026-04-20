@@ -447,9 +447,9 @@
 
           <div class="payment-box">
             <div class="result-section-title">Payment Plan</div>
-            <div class="plan-toggle">
-              <button class="plan-btn" data-years="9" onclick="selectPlan(9)">9 Years</button>
-              <button class="plan-btn active" data-years="10" onclick="selectPlan(10)">10 Years</button>
+            <div class="plan-toggle" id="planToggle">
+              <button class="plan-btn" id="planShort" data-years="9" onclick="selectPlan(this)">9 Years</button>
+              <button class="plan-btn active" id="planLong" data-years="10" onclick="selectPlan(this)">10 Years</button>
             </div>
             <div class="result-row">
               <span class="result-label">Down Payment (10%)</span>
@@ -511,13 +511,35 @@
       }
     }
 
-    function selectPlan(years) {
-      selectedYears = years;
+    function updatePlanToggle(unitType) {
+      const shortBtn = document.getElementById('planShort');
+      const longBtn = document.getElementById('planLong');
+
+      if (unitType === 'villa') {
+        shortBtn.dataset.years = '8';
+        shortBtn.textContent = '8 Years';
+        longBtn.dataset.years = '9';
+        longBtn.textContent = '9 Years';
+        selectedYears = 9; // Default for villas
+      } else {
+        shortBtn.dataset.years = '9';
+        shortBtn.textContent = '9 Years';
+        longBtn.dataset.years = '10';
+        longBtn.textContent = '10 Years';
+        selectedYears = 10; // Default for apartments
+      }
+
+      // Set long plan as active by default
+      shortBtn.classList.remove('active');
+      longBtn.classList.add('active');
+    }
+
+    function selectPlan(btn) {
+      selectedYears = parseInt(btn.dataset.years);
 
       // Update toggle buttons
-      document.querySelectorAll('.plan-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.years) === years);
-      });
+      document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
       // Recalculate if a unit is selected
       if (selectedUnitKey) {
@@ -569,6 +591,9 @@
       selectedUnitKey = card.dataset.unit;
 
       const unit = units[selectedUnitKey];
+
+      // Update plan toggle based on unit type
+      updatePlanToggle(unit.type);
 
       // Update header
       document.getElementById('selectedIcon').innerHTML = card.querySelector('.unit-icon').outerHTML;
