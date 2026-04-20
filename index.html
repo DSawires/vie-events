@@ -231,6 +231,35 @@
       line-height: 1.5;
     }
 
+    .plan-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .plan-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid var(--color-gray-light);
+      border-radius: 8px;
+      background: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .plan-btn:hover {
+      border-color: var(--color-dark);
+    }
+
+    .plan-btn.active {
+      border-color: var(--color-dark);
+      background: var(--color-dark);
+      color: white;
+    }
+
     .book-btn {
       display: block;
       width: 100%;
@@ -418,6 +447,10 @@
 
           <div class="payment-box">
             <div class="result-section-title">Payment Plan</div>
+            <div class="plan-toggle">
+              <button class="plan-btn" data-years="9" onclick="selectPlan(9)">9 Years</button>
+              <button class="plan-btn active" data-years="10" onclick="selectPlan(10)">10 Years</button>
+            </div>
             <div class="result-row">
               <span class="result-label">Down Payment (10%)</span>
               <span class="result-value" id="downPayment"></span>
@@ -466,6 +499,8 @@
     };
 
     let selectedCard = null;
+    let selectedUnitKey = null;
+    let selectedYears = 10;
 
     function formatCurrency(amountInMillions) {
       if (amountInMillions >= 1) {
@@ -476,18 +511,22 @@
       }
     }
 
-    function selectUnit(card) {
-      // Remove selection from previous card
-      if (selectedCard) {
-        selectedCard.classList.remove('selected');
+    function selectPlan(years) {
+      selectedYears = years;
+
+      // Update toggle buttons
+      document.querySelectorAll('.plan-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.years) === years);
+      });
+
+      // Recalculate if a unit is selected
+      if (selectedUnitKey) {
+        updateCalculations();
       }
+    }
 
-      // Select new card
-      card.classList.add('selected');
-      selectedCard = card;
-
-      const unitKey = card.dataset.unit;
-      const unit = units[unitKey];
+    function updateCalculations() {
+      const unit = units[selectedUnitKey];
 
       // Calculate values
       const basePrice = unit.price;
@@ -495,7 +534,7 @@
       const downPayment = basePrice * 0.10;
       const remainingBalance = basePrice - downPayment;
 
-      const years = unit.type === 'villa' ? 9 : 10;
+      const years = selectedYears;
       const quarters = years * 4;
       const quarterlyPayment = remainingBalance / quarters;
       const deliveryYears = unit.type === 'villa' ? 2.5 : 3.5;
@@ -503,10 +542,7 @@
       const paidByDelivery = downPayment + (quarterlyPayment * quartersUntilDelivery);
 
       // Update UI
-      document.getElementById('selectedIcon').innerHTML = card.querySelector('.unit-icon').outerHTML;
-      document.getElementById('unitName').textContent = unit.name;
       document.getElementById('unitDetails').textContent = `${unit.rooms} Rooms | ${unit.area} sqm | Delivers in ${deliveryYears} years`;
-
       document.getElementById('deliveryTimeline').textContent = `${deliveryYears} Years`;
       document.getElementById('basePrice').textContent = formatCurrency(basePrice);
       document.getElementById('maintenanceFee').textContent = formatCurrency(maintenanceFee);
@@ -519,6 +555,27 @@
 
       // Update booking link with unit info
       document.getElementById('bookBtn').href = `book.html?unit=${encodeURIComponent(unit.name)}`;
+    }
+
+    function selectUnit(card) {
+      // Remove selection from previous card
+      if (selectedCard) {
+        selectedCard.classList.remove('selected');
+      }
+
+      // Select new card
+      card.classList.add('selected');
+      selectedCard = card;
+      selectedUnitKey = card.dataset.unit;
+
+      const unit = units[selectedUnitKey];
+
+      // Update header
+      document.getElementById('selectedIcon').innerHTML = card.querySelector('.unit-icon').outerHTML;
+      document.getElementById('unitName').textContent = unit.name;
+
+      // Calculate and display
+      updateCalculations();
 
       // Show results
       document.getElementById('results').classList.add('show');
